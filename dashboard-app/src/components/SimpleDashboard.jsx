@@ -43,30 +43,50 @@ const SimpleDashboard = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (data && chartRef.current) {
+        drawChart();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [data]);
+
   const drawChart = () => {
     const canvas = chartRef.current;
     if (!canvas) return;
 
+    const container = canvas.parentElement;
+    const containerWidth = container.clientWidth - 32; // учитываем padding
+    const containerHeight = 250;
+
+    // Устанавливаем реальные размеры canvas
+    canvas.width = containerWidth;
+    canvas.height = containerHeight;
+
     const ctx = canvas.getContext('2d');
-    const { width, height } = canvas;
     const padding = 40;
-    const chartWidth = width - 2 * padding;
-    const chartHeight = height - 2 * padding;
+    const chartWidth = containerWidth - 2 * padding;
+    const chartHeight = containerHeight - 2 * padding;
 
     // Clear canvas
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, containerWidth, containerHeight);
 
     // Get max value for scaling
     const maxValue = Math.max(...data.daily_stats.map(d => d.count));
     const scale = chartHeight / (maxValue + 2);
 
     // Draw bars
-    const barWidth = chartWidth / data.daily_stats.length - 10;
+    const barWidth = Math.min(60, (chartWidth / data.daily_stats.length) - 20); // ограничиваем максимальную ширину
+    const totalBarsWidth = data.daily_stats.length * (barWidth + 20);
+    const startX = (containerWidth - totalBarsWidth) / 2; // центрируем бары
     
     data.daily_stats.forEach((day, index) => {
-      const x = padding + index * (chartWidth / data.daily_stats.length) + 5;
+      const x = startX + index * (barWidth + 20);
       const barHeight = day.count * scale;
-      const y = height - padding - barHeight;
+      const y = containerHeight - padding - barHeight;
 
       // Draw bar with gradient effect
       const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
@@ -78,25 +98,36 @@ const SimpleDashboard = () => {
 
       // Draw value on top of bar
       ctx.fillStyle = '#374151';
-      ctx.font = '12px Arial';
+      ctx.font = 'bold 14px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(day.count, x + barWidth/2, y - 5);
+      ctx.fillText(day.count, x + barWidth/2, y - 8);
 
       // Draw date label
       ctx.fillStyle = '#6b7280';
-      ctx.font = '10px Arial';
+      ctx.font = '12px Arial';
       const date = new Date(day.date);
       const dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      ctx.fillText(dateLabel, x + barWidth/2, height - padding + 20);
+      ctx.fillText(dateLabel, x + barWidth/2, containerHeight - padding + 20);
     });
 
     // Draw y-axis labels
     ctx.fillStyle = '#6b7280';
-    ctx.font = '10px Arial';
+    ctx.font = '11px Arial';
     ctx.textAlign = 'right';
     for (let i = 0; i <= maxValue + 2; i += Math.ceil((maxValue + 2) / 5)) {
-      const y = height - padding - (i * scale);
-      ctx.fillText(i, padding - 10, y + 3);
+      const y = containerHeight - padding - (i * scale);
+      ctx.fillText(i, padding - 10, y + 4);
+    }
+
+    // Draw grid lines
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= maxValue + 2; i += Math.ceil((maxValue + 2) / 5)) {
+      const y = containerHeight - padding - (i * scale);
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(containerWidth - padding, y);
+      ctx.stroke();
     }
   };
 
@@ -304,11 +335,9 @@ const SimpleDashboard = () => {
           }}>
             <canvas
               ref={chartRef}
-              width={800}
-              height={250}
               style={{
                 width: '100%',
-                height: '100%',
+                height: '250px',
                 display: 'block'
               }}
             />
