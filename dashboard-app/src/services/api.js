@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Базовый URL API (замените на ваш реальный API endpoint)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.VITE_API_URL || 'https://your-api-domain.com';
 
 // Создаем экземпляр axios с базовой конфигурацией
 const apiClient = axios.create({
