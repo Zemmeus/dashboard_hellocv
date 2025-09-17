@@ -389,7 +389,7 @@ const SimpleDashboard = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: '600', color: '#111827', margin: 0 }}>
-                    Active tickets
+                    Resolved tickets✅
                   </h3>
                   <div style={{
                     backgroundColor: '#dcfce7',
