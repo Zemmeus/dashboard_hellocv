@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
  */
 export const getTicketStats = async () => {
   try {
-    const response = await apiClient.get('/get-gist-conv-for-hello-cv');
+    const response = await apiClient.get('/api/get-gist-conv-for-hello-cv/  ');
     return response.data;
   } catch (error) {
     // Возвращаем mock данные в случае ошибки для демонстрации
