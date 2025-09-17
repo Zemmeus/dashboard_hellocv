@@ -94,16 +94,21 @@ const SimpleDashboard = () => {
     // Clear canvas
     ctx.clearRect(0, 0, containerWidth, containerHeight);
 
+    // Sort data by date and take last 10 entries for better display
+    const sortedData = [...data.daily_stats]
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(-10); // показываем последние 10 дней
+
     // Get max value for scaling
-    const maxValue = Math.max(...data.daily_stats.map(d => d.count));
+    const maxValue = Math.max(...sortedData.map(d => d.count));
     const scale = chartHeight / (maxValue + 2);
 
     // Draw bars
-    const barWidth = Math.min(60, (chartWidth / data.daily_stats.length) - 20); // ограничиваем максимальную ширину
-    const totalBarsWidth = data.daily_stats.length * (barWidth + 20);
+    const barWidth = Math.min(60, (chartWidth / sortedData.length) - 20); // ограничиваем максимальную ширину
+    const totalBarsWidth = sortedData.length * (barWidth + 20);
     const startX = (containerWidth - totalBarsWidth) / 2; // центрируем бары
     
-    data.daily_stats.forEach((day, index) => {
+    sortedData.forEach((day, index) => {
       const x = startX + index * (barWidth + 20);
       const barHeight = day.count * scale;
       const y = containerHeight - padding - barHeight;
@@ -373,8 +378,8 @@ const SimpleDashboard = () => {
             gap: '1.5rem',
             marginBottom: '2rem'
           }}>
-            {/* Resolved conversations */}
-            {data.status_stats.resolved && (
+            {/* Active tickets */}
+            {data.status_stats.active && (
               <div style={{
                 backgroundColor: 'white',
                 borderRadius: '0.75rem',
@@ -384,7 +389,7 @@ const SimpleDashboard = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: '600', color: '#111827', margin: 0 }}>
-                    Resolved conversations
+                    Active tickets
                   </h3>
                   <div style={{
                     backgroundColor: '#dcfce7',
@@ -395,10 +400,10 @@ const SimpleDashboard = () => {
                   </div>
                 </div>
                 <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#059669', marginBottom: '0.5rem' }}>
-                  {data.status_stats.resolved.count?.toLocaleString() || '0'}
+                  {data.status_stats.active.count?.toLocaleString() || '0'}
                 </div>
                 <div style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                  {data.status_stats.resolved.percentage || 0}% of total count
+                  {data.status_stats.active.percentage || 0}% of total count
                 </div>
                 <div style={{
                   width: '100%',
@@ -407,7 +412,7 @@ const SimpleDashboard = () => {
                   height: '0.5rem'
                 }}>
                   <div style={{
-                    width: `${data.status_stats.resolved.percentage || 0}%`,
+                    width: `${data.status_stats.active.percentage || 0}%`,
                     backgroundColor: '#059669',
                     height: '100%',
                     borderRadius: '1rem'
@@ -483,7 +488,7 @@ const SimpleDashboard = () => {
                   Daily Statistics
                 </h3>
                 <p style={{ fontSize: '0.9rem', color: '#6b7280', margin: 0 }}>
-                  Ticket creation dynamics over the last {data.daily_stats.length} days
+                  Ticket creation dynamics (showing last 10 days)
                 </p>
               </div>
             </div>
@@ -520,7 +525,10 @@ const SimpleDashboard = () => {
                 borderRadius: '0.5rem'
               }}>
                 <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#3b82f6', marginBottom: '0.25rem' }}>
-                  {(data.daily_stats.reduce((sum, day) => sum + (day.count || 0), 0) / data.daily_stats.length).toFixed(1)}
+                  {(() => {
+                    const sortedData = [...data.daily_stats].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-10);
+                    return (sortedData.reduce((sum, day) => sum + (day.count || 0), 0) / sortedData.length).toFixed(1);
+                  })()}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
                   Average per day
@@ -533,10 +541,13 @@ const SimpleDashboard = () => {
                 borderRadius: '0.5rem'
               }}>
                 <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#059669', marginBottom: '0.25rem' }}>
-                  {Math.max(...data.daily_stats.map(d => d.count || 0))}
+                  {(() => {
+                    const sortedData = [...data.daily_stats].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-10);
+                    return Math.max(...sortedData.map(d => d.count || 0));
+                  })()}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                  Peak day
+                  Peak day (shown)
                 </div>
               </div>
               <div style={{
@@ -549,7 +560,7 @@ const SimpleDashboard = () => {
                   {data.daily_stats.reduce((sum, day) => sum + (day.count || 0), 0)}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                  Total period
+                  Total all time
                 </div>
               </div>
             </div>

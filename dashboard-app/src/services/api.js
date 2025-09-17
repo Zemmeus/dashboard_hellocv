@@ -35,25 +35,42 @@ export const getTicketStats = async () => {
     return {
       success: true,
       data: {
-        total_count: 150,
+        total_count: 101,
         status_stats: {
           active: {
-            count: 120,
-            percentage: 80.0
+            count: 88,
+            percentage: 87.1
           },
           escalated: {
-            count: 30,
-            percentage: 20.0
+            count: 13,
+            percentage: 12.9
           }
         },
         daily_stats: [
-          { date: "2025-09-10", count: 5 },
-          { date: "2025-09-11", count: 8 },
-          { date: "2025-09-12", count: 12 },
-          { date: "2025-09-13", count: 7 },
-          { date: "2025-09-14", count: 15 },
-          { date: "2025-09-15", count: 9 },
-          { date: "2025-09-16", count: 11 }
+          { count: 6, date: "2025-07-06" },
+          { count: 5, date: "2025-07-07" },
+          { count: 2, date: "2025-07-16" },
+          { count: 1, date: "2025-07-17" },
+          { count: 3, date: "2025-08-12" },
+          { count: 8, date: "2025-08-13" },
+          { count: 6, date: "2025-08-14" },
+          { count: 1, date: "2025-08-15" },
+          { count: 1, date: "2025-08-16" },
+          { count: 2, date: "2025-08-17" },
+          { count: 4, date: "2025-08-18" },
+          { count: 5, date: "2025-08-19" },
+          { count: 1, date: "2025-08-20" },
+          { count: 5, date: "2025-08-22" },
+          { count: 10, date: "2025-08-23" },
+          { count: 7, date: "2025-08-24" },
+          { count: 1, date: "2025-08-25" },
+          { count: 3, date: "2025-08-26" },
+          { count: 1, date: "2025-09-03" },
+          { count: 1, date: "2025-09-04" },
+          { count: 1, date: "2025-09-10" },
+          { count: 2, date: "2025-09-11" },
+          { count: 5, date: "2025-09-12" },
+          { count: 20, date: "2025-09-16" }
         ]
       }
     };
